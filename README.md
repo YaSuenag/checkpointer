@@ -28,8 +28,15 @@ You can build `example` with `mvn package`. Note that you have to run `mvn insta
 ## 1. Run example app
 
 ```
+# Build checkpointer
+mvn package
+
+# Build example
 cd example
-$JAVA_HOME/bin/java -XX:-UsePerfData -javaagent:/path/to/checkpointer-0.1.0.jar -cp target/classes:$HOME/.m2/repository/org/crac/crac/1.5.0/crac-1.5.0.jar com.yasuenag.checkpointer.example.CheckpointerExample
+mvn package
+
+# Run example
+$JAVA_HOME/bin/java -XX:-UsePerfData -javaagent:../target/checkpointer-0.1.0.jar -cp target/checkpointer-example-0.1.0.jar:../target/lib/crac-1.5.0.jar com.yasuenag.checkpointer.example.CheckpointerExample
 ```
 
 ## 2. Do checkpoint
@@ -62,8 +69,6 @@ sudo ./bin/checkpointer.sh restore /path/to/checkpoint/dir
 * Need to block event hooks
     * [checkpointer-actions.sh](bin/checkpointer-actions.sh) have to block until completion of each hooks.
 * Improve error handlings
-* Improve examples
-    * Download dependencies to run easily.
 * Publish checkpointer into GitHub Packages
     * Create GHA workflow.
 

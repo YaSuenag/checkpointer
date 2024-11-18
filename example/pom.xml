@@ -85,7 +85,7 @@ along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
                             <arguments>
                                 <!-- <argument>-Xlog:exceptions=trace</argument> -->
                                 <argument>-XX:-UsePerfData</argument>
-                                <argument>-javaagent:../target/checkpointer-0.1.0.jar</argument>
+                                <argument>-javaagent:${project.basedir}/../target/checkpointer-0.1.0.jar</argument>
                                 <argument>-cp</argument>
                                 <classpath/>
                                 <argument>${mainClass}</argument>
