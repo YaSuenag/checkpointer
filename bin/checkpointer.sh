@@ -37,6 +37,10 @@ if [ "$CMD" == 'checkpoint' ]; then
     exit 2
   fi
 
+  TARGET_USER=`sed -e 's/\x0/\n/g' /proc/$TARGET_PID/environ | grep -w USER | cut -d '=' -f 2`
+  cp /tmp/hsperfdata_$TARGET_USER/$TARGET_PID $CPDIR/hsperfdata
+  echo $TARGET_USER > $CPDIR/username
+  echo $TARGET_PID > $CPDIR/target_pid
   criu dump -t $TARGET_PID --external unix --action-script $ACTION_SCRIPT -D $CPDIR -j
 elif [ "$CMD" == 'restore' ]; then
   CPDIR=$ARG1
@@ -45,6 +49,11 @@ elif [ "$CMD" == 'restore' ]; then
     exit 2
   fi
 
+  TARGET_USER=`cat $CPDIR/username`
+  TARGET_PID=`cat $CPDIR/target_pid`
+  mkdir -p /tmp/hsperfdata_$TARGET_USER
+  cp $CPDIR/hsperfdata /tmp/hsperfdata_$TARGET_USER/$TARGET_PID
+  chown $TARGET_USER /tmp/hsperfdata_$TARGET_USER/$TARGET_PID
   criu restore --action-script $ACTION_SCRIPT -D $CPDIR -j
 elif [ -z "$CMD" ]; then
     echo 'Command is empty'
