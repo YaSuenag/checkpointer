@@ -17,8 +17,39 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$CRTOOLS_SCRIPT_ACTION" == 'pre-dump' ]; then
-  echo -n c | nc -U /tmp/checkpointer.$CRTOOLS_INIT_PID
-elif [ "$CRTOOLS_SCRIPT_ACTION" == 'post-resume' ]; then
-  echo -n r | nc -U /tmp/checkpointer.$CRTOOLS_INIT_PID
+CMD=$1
+ARG1=$2
+ARG2=$3
+
+BASEDIR=$(realpath `dirname $0`)
+ACTION_SCRIPT=$BASEDIR/checkpointer-actions.sh
+
+if [ "$CMD" == 'checkpoint' ]; then
+  TARGET_PID=$ARG1
+  if [ -z "$TARGET_PID" ]; then
+    echo 'PID is empty'
+    exit 1
+  fi
+
+  CPDIR=$ARG2
+  if [ -z "$CPDIR" ]; then
+    echo 'Checkpoint directory is empty'
+    exit 2
+  fi
+
+  criu dump -t $TARGET_PID --external unix --action-script $ACTION_SCRIPT -D $CPDIR -j
+elif [ "$CMD" == 'restore' ]; then
+  CPDIR=$ARG1
+  if [ -z "$CPDIR" ]; then
+    echo 'Checkpoint directory is empty'
+    exit 2
+  fi
+
+  criu restore --action-script $ACTION_SCRIPT -D $CPDIR -j
+elif [ -z "$CMD" ]; then
+    echo 'Command is empty'
+    exit 100
+else
+    echo "Unknown command: $CMD"
+    exit 200
 fi

@@ -37,14 +37,14 @@ $JAVA_HOME/bin/java -XX:-UsePerfData -javaagent:/path/to/checkpointer-0.1.0.jar 
 Note that you cannot see the PID on `jcmd` because the process runs with `-XX:-UsePerfData`.
 
 ```
-mkdir /tmp/checkpoint
-sudo criu dump -t [PID] --external unix --action-script /path/to/checkpointer/bin/checkpointer-actions.sh -D /tmp/checkpoint -j
+mkdir /path/to/checkpoint/dir
+sudo ./bin/checkpointer.sh checkpoint [PID] /path/to/checkpoint/dir
 ```
 
 ## 3. Restore
 
 ```
-sudo criu restore --action-script /path/to/bin/checkpointer-actions.sh -D /tmp/checkpoint -j
+sudo ./bin/checkpointer.sh restore /path/to/checkpoint/dir
 ```
 
 # Under the hood
@@ -61,7 +61,6 @@ sudo criu restore --action-script /path/to/bin/checkpointer-actions.sh -D /tmp/c
     * [CRaC JDK](https://github.com/openjdk/crac) remaps memory segments for hsperfdata in HotSpot.
 * Need to block event hooks
     * [checkpointer-actions.sh](bin/checkpointer-actions.sh) have to block until completion of each hooks.
-* Specify path to unix domain socket without wild card in [checkpointer-actions.sh](bin/checkpointer-actions.sh)
 * Improve error handlings
 * Improve examples
     * Download dependencies to run easily.
