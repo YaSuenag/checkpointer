@@ -64,8 +64,6 @@ sudo ./bin/checkpointer.sh restore /path/to/checkpoint/dir
 
 # Known issues / TODO
 
-* Need to block event hooks
-    * [checkpointer-actions.sh](bin/checkpointer-actions.sh) have to block until completion of each hooks.
 * Improve error handlings
 * Publish checkpointer into GitHub Packages
     * Create GHA workflow.
