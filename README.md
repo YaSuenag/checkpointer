@@ -36,7 +36,7 @@ cd example
 mvn package
 
 # Run example
-$JAVA_HOME/bin/java -XX:-UsePerfData -javaagent:../target/checkpointer-0.1.0.jar -cp target/checkpointer-example-0.1.0.jar:../target/lib/crac-1.5.0.jar com.yasuenag.checkpointer.example.CheckpointerExample
+$JAVA_HOME/bin/java -javaagent:../target/checkpointer-0.1.0.jar -cp target/checkpointer-example-0.1.0.jar:../target/lib/crac-1.5.0.jar com.yasuenag.checkpointer.example.CheckpointerExample
 ```
 
 ## 2. Do checkpoint
