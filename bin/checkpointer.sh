@@ -38,10 +38,10 @@ if [ "$CMD" == 'checkpoint' ]; then
   fi
 
   TARGET_USER=`sed -e 's/\x0/\n/g' /proc/$TARGET_PID/environ | grep -w USER | cut -d '=' -f 2`
-  cp /tmp/hsperfdata_$TARGET_USER/$TARGET_PID $CPDIR/hsperfdata
   echo $TARGET_USER > $CPDIR/username
   echo $TARGET_PID > $CPDIR/target_pid
   criu dump -t $TARGET_PID --external unix --action-script $ACTION_SCRIPT -D $CPDIR -j
+  mv /tmp/hsperfdata_$TARGET_USER/$TARGET_PID $CPDIR/hsperfdata
 elif [ "$CMD" == 'restore' ]; then
   CPDIR=$ARG1
   if [ -z "$CPDIR" ]; then
