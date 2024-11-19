@@ -18,6 +18,7 @@
 */
 package com.yasuenag.checkpointer.example;
 
+import java.util.concurrent.Semaphore;
 import java.time.LocalDateTime;
 
 import org.crac.Context;
@@ -27,25 +28,34 @@ import org.crac.Resource;
 
 public class CheckpointerExample implements Resource{
 
+  private final Semaphore cpSemaphore;
+
   public CheckpointerExample(){
+    cpSemaphore = new Semaphore(1, true);
     Core.getGlobalContext().register(this);
   }
 
   @Override
   public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
+    cpSemaphore.acquire();
     System.out.println("<< beforeCheckpoint >>");
   }
 
   @Override
   public void afterRestore(Context<? extends Resource> context) throws Exception {
     System.out.println("<< afterRestore >>");
+    cpSemaphore.release();
   }
 
   public void run() throws Exception{
     int cnt = 0;
     while(true){
-      System.out.printf("%s: %d\n", LocalDateTime.now().toString(), cnt++);
-      Thread.sleep(1000);
+      cpSemaphore.acquire();
+      {
+        System.out.printf("%s: %d\n", LocalDateTime.now().toString(), cnt++);
+        Thread.sleep(1000);
+      }
+      cpSemaphore.release();
     }
   }
 
