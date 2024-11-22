@@ -17,7 +17,12 @@
 package com.yasuenag.checkpointer.crac;
 
 
-public class RestoreException extends Exception{
+/**
+ * This class is needed for loading the implementation in org.crac .
+ */
+public class RestoreException extends org.crac.RestoreException{
+
+  private static final long serialVersionUID = 1733821023697618898L;
 
   public RestoreException() {
     super();
@@ -25,6 +30,11 @@ public class RestoreException extends Exception{
 
   public RestoreException(String message) {
     super(message);
+  }
+
+  public RestoreException(Throwable cause){
+    this();
+    initCause(cause);
   }
 
 }

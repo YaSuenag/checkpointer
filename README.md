@@ -64,7 +64,6 @@ sudo ./bin/checkpointer.sh restore /path/to/checkpoint/dir
 
 # Known issues / TODO
 
-* Improve error handlings
 * Publish checkpointer into GitHub Packages
     * Create GHA workflow.
 

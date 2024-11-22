@@ -17,5 +17,8 @@
 package com.yasuenag.checkpointer.crac;
 
 
+/**
+ * This interface is needed for loading the implementation in org.crac .
+ */
 public interface Resource extends org.crac.Resource{
 }

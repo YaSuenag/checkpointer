@@ -17,7 +17,12 @@
 package com.yasuenag.checkpointer.crac;
 
 
-public class CheckpointException extends Exception{
+/**
+ * This class is needed for loading the implementation in org.crac .
+ */
+public class CheckpointException extends org.crac.CheckpointException{
+
+  private static final long serialVersionUID = 50979928986164934L;
 
   public CheckpointException() {
     super();
@@ -25,6 +30,10 @@ public class CheckpointException extends Exception{
 
   public CheckpointException(String message) {
     super(message);
+  }
+
+  public CheckpointException(Throwable cause){
+    initCause(cause);
   }
 
 }

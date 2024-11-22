@@ -33,26 +33,26 @@ public class Context extends org.crac.Context<Resource>{
 
   @Override
   public void beforeCheckpoint(org.crac.Context<? extends org.crac.Resource> context) throws org.crac.CheckpointException{
-    resources.forEach(r -> {
+    for(var resource : resources){
       try{
-        r.beforeCheckpoint(context);
+        resource.beforeCheckpoint(context);
       }
       catch(Exception e){
-        throw new RuntimeException(e);
+        throw new CheckpointException(e);
       }
-    });
+    }
   }
 
   @Override
   public void afterRestore(org.crac.Context<? extends org.crac.Resource> context) throws org.crac.RestoreException{
-    resources.forEach(r -> {
+    for(var resource : resources){
       try{
-        r.afterRestore(context);
+        resource.afterRestore(context);
       }
       catch(Exception e){
-        throw new RuntimeException(e);
+        throw new RestoreException(e);
       }
-    });
+    }
   }
 
   @Override
@@ -60,19 +60,29 @@ public class Context extends org.crac.Context<Resource>{
     resources.add(resource);
   }
 
-  public static void runAllOfBeforeCheckpointHooks() throws Exception{
-    for(var ctxt : CONTEXTS){
-      for(var res : ctxt.resources){
-        res.beforeCheckpoint(ctxt);
+  public static void runAllOfBeforeCheckpointHooks() throws CheckpointException{
+    try{
+      for(var ctxt : CONTEXTS){
+        for(var res : ctxt.resources){
+          res.beforeCheckpoint(ctxt);
+        }
       }
+    }
+    catch(Exception e){
+      throw new CheckpointException(e);
     }
   }
 
-  public static void runAllOfAfterRestoreHooks() throws Exception{
-    for(var ctxt : CONTEXTS){
-      for(var res : ctxt.resources){
-        res.afterRestore(ctxt);
+  public static void runAllOfAfterRestoreHooks() throws RestoreException{
+    try{
+      for(var ctxt : CONTEXTS){
+        for(var res : ctxt.resources){
+          res.afterRestore(ctxt);
+        }
       }
+    }
+    catch(Exception e){
+      throw new RestoreException(e);
     }
   }
 

@@ -19,7 +19,6 @@
 package com.yasuenag.checkpointer;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.StandardProtocolFamily;
 import java.net.UnixDomainSocketAddress;
 import java.nio.ByteBuffer;
@@ -42,7 +41,9 @@ public class CheckpointerAgent implements Runnable{
     serverCh = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
     serverCh.bind(UnixDomainSocketAddress.of(sockPath));
     sockPath.toFile().deleteOnExit();
+  }
 
+  public void startAcceptorThread(){
     var acceptorThread = new Thread(this, "Checkpointer Agent");
     acceptorThread.setDaemon(true);
     acceptorThread.start();
@@ -80,20 +81,14 @@ public class CheckpointerAgent implements Runnable{
     }
   }
 
-  public static void agentmain(String agentArgs){
+  public static void agentmain(String agentArgs) throws Exception{
     premain(agentArgs);
   }
 
-  public static void premain(String agentArgs){
+  public static void premain(String agentArgs) throws Exception{
     System.setProperty("org.crac.Core.Compat", Core.class.getPackageName());
-
-    try{
-      new CheckpointerAgent();
-    }
-    catch(IOException e){
-      throw new UncheckedIOException(e);
-    }
+    var agent = new CheckpointerAgent();
+    agent.startAcceptorThread();
   }
 
 }
-

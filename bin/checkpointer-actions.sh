@@ -17,8 +17,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$CRTOOLS_SCRIPT_ACTION" == 'pre-dump' ]; then
-  echo -n c | nc -U /tmp/checkpointer.$CRTOOLS_INIT_PID
-elif [ "$CRTOOLS_SCRIPT_ACTION" == 'post-resume' ]; then
-  echo -n r | nc -U /tmp/checkpointer.$CRTOOLS_INIT_PID
+CMD=''
+case "$CRTOOLS_SCRIPT_ACTION" in
+  'pre-dump')
+    CMD=c;;
+  'post-resume')
+    CMD=r;;
+esac
+
+if [ -n "$CMD" ]; then
+  echo -n $CMD | nc -U /tmp/checkpointer.$CRTOOLS_INIT_PID
 fi
