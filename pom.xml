@@ -41,6 +41,12 @@ along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
             <artifactId>crac</artifactId>
             <version>1.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.11.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
     <build>
@@ -87,7 +93,7 @@ along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
                         </configuration>
                     </execution>
                 </executions>
-          </plugin>
+            </plugin>
         </plugins>
     </build>
 </project>
