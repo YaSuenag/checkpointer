@@ -61,15 +61,18 @@ public class CheckpointerAgent implements Runnable{
           buf.flip();
           byte cmd = buf.get();
 
-          if(cmd == 'c'){ // checkpoint
+          if(cmd == (byte)'c'){ // checkpoint
             Context.runAllOfBeforeCheckpointHooks();
           }
-          else if(cmd == 'r'){ // restore
+          else if(cmd == (byte)'r'){ // restore
             Context.runAllOfAfterRestoreHooks();
           }
           else{
-            throw new RuntimeException("Illegal command: " + cmd);
+            throw new RuntimeException("Illegal command: " + (char)cmd);
           }
+        }
+        catch(Exception e){
+          e.printStackTrace();
         }
         finally{
           ch.close();
