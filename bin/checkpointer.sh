@@ -42,6 +42,7 @@ if [ "$CMD" == 'checkpoint' ]; then
   echo $TARGET_PID > $CPDIR/target_pid
   criu dump -t $TARGET_PID --external unix --action-script $ACTION_SCRIPT -D $CPDIR -j
   mv /tmp/hsperfdata_$TARGET_USER/$TARGET_PID $CPDIR/hsperfdata
+  rm -f /tmp/checkpointer.$TARGET_PID
 elif [ "$CMD" == 'restore' ]; then
   CPDIR=$ARG1
   if [ -z "$CPDIR" ]; then
