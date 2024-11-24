@@ -101,6 +101,11 @@ public class CheckpointerAgentTest{
       }
       Assertions.assertTrue(resource.isBeforeCheckpointCalled());
       Assertions.assertFalse(resource.isAfterRestoreCalled());
+
+      buf.clear();
+      sock.read(buf);
+      buf.flip();
+      Assertions.assertEquals((byte)'t', buf.get());
     }
     buf.clear();
     resource.clear();
@@ -125,6 +130,11 @@ public class CheckpointerAgentTest{
 
       Assertions.assertFalse(resource.isBeforeCheckpointCalled());
       Assertions.assertFalse(resource.isAfterRestoreCalled());
+
+      buf.clear();
+      sock.read(buf);
+      buf.flip();
+      Assertions.assertEquals((byte)'f', buf.get());
     }
     buf.clear();
 
@@ -139,6 +149,11 @@ public class CheckpointerAgentTest{
       }
       Assertions.assertFalse(resource.isBeforeCheckpointCalled());
       Assertions.assertTrue(resource.isAfterRestoreCalled());
+
+      buf.clear();
+      sock.read(buf);
+      buf.flip();
+      Assertions.assertEquals((byte)'t', buf.get());
     }
 
   }

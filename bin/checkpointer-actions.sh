@@ -26,5 +26,10 @@ case "$CRTOOLS_SCRIPT_ACTION" in
 esac
 
 if [ -n "$CMD" ]; then
-  echo -n $CMD | nc -U /tmp/checkpointer.$CRTOOLS_INIT_PID
+  RESULT=`echo -n $CMD | nc -U /tmp/checkpointer.$CRTOOLS_INIT_PID`
+  if [ "$RESULT" == 't' ]; then
+    exit 0
+  else
+    exit 1
+  fi
 fi

@@ -55,6 +55,7 @@ public class CheckpointerAgent implements Runnable{
       SocketChannel ch;
       var buf = ByteBuffer.allocate(1);
       while((ch = serverCh.accept()) != null){
+        boolean result = false;
         try{
           buf.clear();
           ch.read(buf);
@@ -70,11 +71,16 @@ public class CheckpointerAgent implements Runnable{
           else{
             throw new RuntimeException("Illegal command: " + (char)cmd);
           }
+          result = true;
         }
         catch(Exception e){
           e.printStackTrace();
         }
         finally{
+          buf.clear();
+          buf.put(result ? (byte)'t' : (byte)'f');
+          buf.flip();
+          ch.write(buf);
           ch.close();
         }
       }
