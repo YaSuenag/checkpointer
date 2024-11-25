@@ -1,5 +1,6 @@
 checkpointer - primitive [CRaC](https://openjdk.org/projects/crac/) implementation
 ![CodeQL](../../workflows/codeql.yaml/badge.svg)
+![CI result](../../workflows/ci.yaml/badge.svg)
 ===
 
 checkpointer provides checkpoint/restore hooks on [CRIU](https://criu.org/) as [org.crac](https://github.com/CRaC/org.crac) interface.
