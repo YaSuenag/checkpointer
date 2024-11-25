@@ -1,0 +1,42 @@
+name: Publish the release
+
+on:
+  release:
+    types: [ published ]
+
+concurrency:
+  group: publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+        cache: maven
+
+    - name: Run Maven
+      run: mvn -B -DskipTests package
+
+    - name: packaging
+      run: |
+        mkdir checkpointer
+        cp target/checkpointer-${{ github.ref_name }}.jar checkpointer/
+        cp -fR bin checkpointer/
+        cp README.md checkpointer/
+        tar cvfz checkpointer-${{ github.ref_name }}.tar.gz checkpointer/
+
+    - name: Upload release asset
+      uses: AButler/upload-release-assets@v3.0
+      with:
+        release-tag: ${{ github.ref_name }}
+        files: checkpointer-${{ github.ref_name }}.tar.gz
+        repo-token: ${{ github.token }}
