@@ -70,6 +70,9 @@ public class CheckpointerAgentTest{
     CheckpointerAgent.premain(null);
     Assertions.assertEquals("com.yasuenag.checkpointer.crac", System.getProperty("org.crac.Core.Compat"));
 
+    // Sleep 3 sec to wait to start HTTP server...
+    Thread.sleep(3000);
+
     ResourceTestImpl resource = new ResourceTestImpl();
     Core.getGlobalContext().register(resource);
 
