@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Yasumasa Suenaga
+ * Copyright (C) 2024, 2025, Yasumasa Suenaga
  *
  * This file is part of checkpointer                                     *
  * checkpointer is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ public class Context extends org.crac.Context<Resource>{
 
   @Override
   public void beforeCheckpoint(org.crac.Context<? extends org.crac.Resource> context) throws org.crac.CheckpointException{
-    for(var resource : resources){
+    for(Resource resource : resources){
       try{
         resource.beforeCheckpoint(context);
       }
@@ -45,7 +45,7 @@ public class Context extends org.crac.Context<Resource>{
 
   @Override
   public void afterRestore(org.crac.Context<? extends org.crac.Resource> context) throws org.crac.RestoreException{
-    for(var resource : resources){
+    for(Resource resource : resources){
       try{
         resource.afterRestore(context);
       }
@@ -62,8 +62,8 @@ public class Context extends org.crac.Context<Resource>{
 
   public static void runAllOfBeforeCheckpointHooks() throws CheckpointException{
     try{
-      for(var ctxt : CONTEXTS){
-        for(var res : ctxt.resources){
+      for(Context ctxt : CONTEXTS){
+        for(Resource res : ctxt.resources){
           res.beforeCheckpoint(ctxt);
         }
       }
@@ -75,8 +75,8 @@ public class Context extends org.crac.Context<Resource>{
 
   public static void runAllOfAfterRestoreHooks() throws RestoreException{
     try{
-      for(var ctxt : CONTEXTS){
-        for(var res : ctxt.resources){
+      for(Context ctxt : CONTEXTS){
+        for(Resource res : ctxt.resources){
           res.afterRestore(ctxt);
         }
       }

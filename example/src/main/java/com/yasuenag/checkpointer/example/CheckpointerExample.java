@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Yasumasa Suenaga
+ * Copyright (C) 2024, 2025, Yasumasa Suenaga
  *
  * This file is part of checkpointer
  *
@@ -60,7 +60,7 @@ public class CheckpointerExample implements Resource{
   }
 
   public static void main(String[] args) throws Exception{
-    var inst = new CheckpointerExample();
+    CheckpointerExample inst = new CheckpointerExample();
     inst.run();
   }
 

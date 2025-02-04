@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Yasumasa Suenaga
+ * Copyright (C) 2024, 2025, Yasumasa Suenaga
  *
  * This file is part of checkpointer                                     *
  * checkpointer is free software: you can redistribute it and/or modify
@@ -26,8 +26,8 @@ public class RestoreExceptionTest{
 
   @Test
   public void testCheckpointExceptionConstructorWithThrowable(){
-    var causeException = new Exception("cause");
-    var testException = new RestoreException(causeException);
+    Exception causeException = new Exception("cause");
+    RestoreException testException = new RestoreException(causeException);
 
     Assertions.assertEquals(causeException.getMessage(), testException.getCause().getMessage());
   }

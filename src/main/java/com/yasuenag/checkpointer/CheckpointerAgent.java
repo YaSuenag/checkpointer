@@ -54,7 +54,7 @@ public class CheckpointerAgent implements HttpHandler{
     }
 
     int port = (hostport.length == 2) ? Integer.parseInt(hostport[1]) : 10095;
-    var sockAddr = new InetSocketAddress(hostport[0], port);
+    InetSocketAddress sockAddr = new InetSocketAddress(hostport[0], port);
     server = HttpServer.create(sockAddr, 0);
     server.setExecutor(Executors.newFixedThreadPool(1));
     server.createContext(BEFORE_CHECKPOINT_PATH, this);
@@ -67,7 +67,7 @@ public class CheckpointerAgent implements HttpHandler{
   public void handle(HttpExchange exchange) throws IOException{
     int rCode = 400;
 
-    try(exchange){
+    try{
       if(exchange.getRequestMethod().equals("POST")){
         switch(exchange.getHttpContext().getPath()){
           case BEFORE_CHECKPOINT_PATH:
@@ -89,6 +89,9 @@ public class CheckpointerAgent implements HttpHandler{
     catch(Exception e){
       throw new RuntimeException(e);
     }
+    finally{
+      exchange.close();
+    }
   }
 
   public static void agentmain(String agentArgs) throws Exception{
@@ -96,7 +99,7 @@ public class CheckpointerAgent implements HttpHandler{
   }
 
   public static void premain(String agentArgs) throws Exception{
-    System.setProperty("org.crac.Core.Compat", Core.class.getPackageName());
+    System.setProperty("org.crac.Core.Compat", Core.class.getPackage().getName());
 
     new CheckpointerAgent(agentArgs);
   }

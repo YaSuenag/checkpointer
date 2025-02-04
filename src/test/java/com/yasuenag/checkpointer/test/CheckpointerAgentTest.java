@@ -70,12 +70,12 @@ public class CheckpointerAgentTest{
     CheckpointerAgent.premain(null);
     Assertions.assertEquals("com.yasuenag.checkpointer.crac", System.getProperty("org.crac.Core.Compat"));
 
-    var resource = new ResourceTestImpl();
+    ResourceTestImpl resource = new ResourceTestImpl();
     Core.getGlobalContext().register(resource);
 
-    var client = HttpClient.newBuilder()
-                           .version(HttpClient.Version.HTTP_1_1)
-                           .build();
+    HttpClient client = HttpClient.newBuilder()
+                                  .version(HttpClient.Version.HTTP_1_1)
+                                  .build();
 
     HttpRequest request;
     HttpResponse<Void> response;

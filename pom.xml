@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-Copyright (C) 2024, Yasumasa Suenaga
+Copyright (C) 2024, 2025, Yasumasa Suenaga
 
 This file is part of checkpointer.
 
@@ -31,8 +31,8 @@ along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -61,6 +61,19 @@ along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
                     </compilerArgs>
                     <debug>true</debug>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>process-test-sources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <source>11</source>
+                            <target>11</target>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -20,11 +20,11 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: 17
+        java-version: 8
         cache: maven
 
     - name: Run Maven
-      run: mvn -B -DskipTests package
+      run: mvn -B -Dmaven.test.skip=true package
 
     - name: packaging
       run: |

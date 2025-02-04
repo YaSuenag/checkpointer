@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Yasumasa Suenaga
+ * Copyright (C) 2024, 2025, Yasumasa Suenaga
  *
  * This file is part of checkpointer                                     *
  * checkpointer is free software: you can redistribute it and/or modify
@@ -27,17 +27,17 @@ public class CoreTest{
 
   @Test
   public void testCheckpointRestore(){
-    var core = new Core();
+    Core core = new Core();
     Assertions.assertThrows(UnsupportedOperationException.class, core::checkpointRestore);
   }
 
   @Test
   public void testGlobalContext(){
-    var ctxt = Core.getGlobalContext();
+    Context ctxt = Core.getGlobalContext();
     Assertions.assertEquals(Context.class, ctxt.getClass());
 
     // Global context should be singleton.
-    var ctxt2 = Core.getGlobalContext();
+    Context ctxt2 = Core.getGlobalContext();
     Assertions.assertSame(ctxt, ctxt2);
   }
 

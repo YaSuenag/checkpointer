@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Yasumasa Suenaga
+ * Copyright (C) 2024, 2025, Yasumasa Suenaga
  *
  * This file is part of checkpointer                                     *
  * checkpointer is free software: you can redistribute it and/or modify
@@ -60,8 +60,8 @@ public class ContextTest{
 
   @Test
   public void testBeforeCheckpoint() throws Exception{
-    var ctxt = new Context();
-    var resource = new ResourceTest(ctxt);
+    Context ctxt = new Context();
+    ResourceTest resource = new ResourceTest(ctxt);
     ctxt.register(resource);
 
     ctxt.beforeCheckpoint(ctxt);
@@ -71,8 +71,8 @@ public class ContextTest{
 
   @Test
   public void testAfterRestore() throws Exception{
-    var ctxt = new Context();
-    var resource = new ResourceTest(ctxt);
+    Context ctxt = new Context();
+    ResourceTest resource = new ResourceTest(ctxt);
     ctxt.register(resource);
 
     ctxt.afterRestore(ctxt);
@@ -82,12 +82,12 @@ public class ContextTest{
 
   @Test
   public void testRunAllOfBeforeCheckpointHooks() throws Exception{
-    var ctxt = new Context();
-    var resource = new ResourceTest(ctxt);
+    Context ctxt = new Context();
+    ResourceTest resource = new ResourceTest(ctxt);
     ctxt.register(resource);
 
-    var ctxt2 = new Context();
-    var resource2 = new ResourceTest(ctxt2);
+    Context ctxt2 = new Context();
+    ResourceTest resource2 = new ResourceTest(ctxt2);
     ctxt2.register(resource2);
 
     Context.runAllOfBeforeCheckpointHooks();
@@ -100,12 +100,12 @@ public class ContextTest{
 
   @Test
   public void testRunAllOfAfterRestoreHooks() throws Exception{
-    var ctxt = new Context();
-    var resource = new ResourceTest(ctxt);
+    Context ctxt = new Context();
+    ResourceTest resource = new ResourceTest(ctxt);
     ctxt.register(resource);
 
-    var ctxt2 = new Context();
-    var resource2 = new ResourceTest(ctxt2);
+    Context ctxt2 = new Context();
+    ResourceTest resource2 = new ResourceTest(ctxt2);
     ctxt2.register(resource2);
 
     Context.runAllOfAfterRestoreHooks();
