@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Yasumasa Suenaga
+ * Copyright (C) 2024, 2025, Yasumasa Suenaga
  *
  * This file is part of checkpointer
  *
@@ -19,71 +19,72 @@
 package com.yasuenag.checkpointer;
 
 import java.io.IOException;
-import java.net.StandardProtocolFamily;
-import java.net.UnixDomainSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.nio.file.Path;
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 import com.yasuenag.checkpointer.crac.Context;
 import com.yasuenag.checkpointer.crac.Core;
 
 
-public class CheckpointerAgent implements Runnable{
+public class CheckpointerAgent implements HttpHandler{
 
-  private final ServerSocketChannel serverCh;
+  public static final String BEFORE_CHECKPOINT_PATH = "/before-checkpoint";
+  public static final String AFTER_RESTORE_PATH = "/after-restore";
 
-  public CheckpointerAgent() throws IOException{
-    var pid = ProcessHandle.current().pid();
-    var sockPath = Path.of("/tmp", String.format("checkpointer.%d", pid));
+  private final HttpServer server;
 
-    serverCh = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
-    serverCh.bind(UnixDomainSocketAddress.of(sockPath));
-    sockPath.toFile().deleteOnExit();
-  }
+  public CheckpointerAgent(String option) throws IOException{
+    String addr = "localhost:10095";
+    if(option != null){
+      if(option.startsWith("addr=")){
+        addr = option.substring(5);
+      }
+      else{
+        throw new IllegalArgumentException("Unknown option: " + option);
+      }
+    }
 
-  public void startAcceptorThread(){
-    var acceptorThread = new Thread(this, "Checkpointer Agent");
-    acceptorThread.setDaemon(true);
-    acceptorThread.start();
+    String[] hostport = addr.split(":");
+    if(hostport.length > 2){
+      throw new IllegalArgumentException("Illegal address: " + addr);
+    }
+
+    int port = (hostport.length == 2) ? Integer.parseInt(hostport[1]) : 10095;
+    var sockAddr = new InetSocketAddress(hostport[0], port);
+    server = HttpServer.create(sockAddr, 0);
+    server.setExecutor(Executors.newFixedThreadPool(1));
+    server.createContext(BEFORE_CHECKPOINT_PATH, this);
+    server.createContext(AFTER_RESTORE_PATH, this);
+
+    server.start();
   }
 
   @Override
-  public void run(){
-    try(serverCh){
-      SocketChannel ch;
-      var buf = ByteBuffer.allocate(1);
-      while((ch = serverCh.accept()) != null){
-        boolean result = false;
-        try{
-          buf.clear();
-          ch.read(buf);
-          buf.flip();
-          byte cmd = buf.get();
+  public void handle(HttpExchange exchange) throws IOException{
+    int rCode = 400;
 
-          if(cmd == (byte)'c'){ // checkpoint
+    try(exchange){
+      if(exchange.getRequestMethod().equals("POST")){
+        switch(exchange.getHttpContext().getPath()){
+          case BEFORE_CHECKPOINT_PATH:
             Context.runAllOfBeforeCheckpointHooks();
-          }
-          else if(cmd == (byte)'r'){ // restore
+            rCode = 204;
+            break;
+          case AFTER_RESTORE_PATH:
             Context.runAllOfAfterRestoreHooks();
-          }
-          else{
-            throw new RuntimeException("Illegal command: " + (char)cmd);
-          }
-          result = true;
-        }
-        catch(Exception e){
-          e.printStackTrace();
-        }
-        finally{
-          buf.clear();
-          buf.put(result ? (byte)'t' : (byte)'f');
-          buf.flip();
-          ch.write(buf);
-          ch.close();
+            rCode = 204;
+            break;
         }
       }
+
+      exchange.sendResponseHeaders(rCode, -1);
+    }
+    catch(IOException e){
+      throw e;
     }
     catch(Exception e){
       throw new RuntimeException(e);
@@ -96,8 +97,8 @@ public class CheckpointerAgent implements Runnable{
 
   public static void premain(String agentArgs) throws Exception{
     System.setProperty("org.crac.Core.Compat", Core.class.getPackageName());
-    var agent = new CheckpointerAgent();
-    agent.startAcceptorThread();
+
+    new CheckpointerAgent(agentArgs);
   }
 
 }

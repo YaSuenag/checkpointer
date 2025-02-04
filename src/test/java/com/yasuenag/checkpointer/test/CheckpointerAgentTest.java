@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Yasumasa Suenaga
+ * Copyright (C) 2024, 2025, Yasumasa Suenaga
  *
  * This file is part of checkpointer
  *
@@ -18,12 +18,10 @@
 */
 package com.yasuenag.checkpointer.test;
 
-import java.io.IOException;
-import java.net.StandardProtocolFamily;
-import java.net.UnixDomainSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.nio.file.Path;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 import org.crac.Context;
 import org.crac.Core;
@@ -69,93 +67,42 @@ public class CheckpointerAgentTest{
 
   @Test
   public void testCheckpointerAgent() throws Exception{
-    var pid = ProcessHandle.current().pid();
-    var sockPath = Path.of("/tmp", String.format("checkpointer.%d", pid));
-
     CheckpointerAgent.premain(null);
     Assertions.assertEquals("com.yasuenag.checkpointer.crac", System.getProperty("org.crac.Core.Compat"));
-    Assertions.assertTrue(sockPath.toFile().canWrite());
-
-    var acceptorThread = Thread.getAllStackTraces()
-                               .keySet()
-                               .stream()
-                               .filter(t -> t.getName().equals("Checkpointer Agent"))
-                               .findFirst()
-                               .get();
-    Assertions.assertTrue(acceptorThread.isDaemon());
-    Assertions.assertEquals(Thread.State.RUNNABLE, acceptorThread.getState());
 
     var resource = new ResourceTestImpl();
     Core.getGlobalContext().register(resource);
-    var buf = ByteBuffer.allocate(1);
+
+    var client = HttpClient.newBuilder()
+                           .version(HttpClient.Version.HTTP_1_1)
+                           .build();
+
+    HttpRequest request;
+    HttpResponse<Void> response;
 
     // checkpoint
-    try(var sock = SocketChannel.open(StandardProtocolFamily.UNIX)){
-      sock.connect(UnixDomainSocketAddress.of(sockPath));
-
-      buf.put((byte)'c');
-      buf.flip();
-      synchronized(resource){
-        sock.write(buf);
-        resource.wait();
-      }
-      Assertions.assertTrue(resource.isBeforeCheckpointCalled());
-      Assertions.assertFalse(resource.isAfterRestoreCalled());
-
-      buf.clear();
-      sock.read(buf);
-      buf.flip();
-      Assertions.assertEquals((byte)'t', buf.get());
-    }
-    buf.clear();
-    resource.clear();
+    request = HttpRequest.newBuilder()
+                         .uri(URI.create("http://localhost:10095/before-checkpoint"))
+                         .POST(HttpRequest.BodyPublishers.noBody())
+                         .build();
+    response = client.send(request, HttpResponse.BodyHandlers.discarding());
+    Assertions.assertEquals(204, response.statusCode());
 
     // illegal command
-    try(var sock = SocketChannel.open(StandardProtocolFamily.UNIX)){
-      sock.connect(UnixDomainSocketAddress.of(sockPath));
-      buf.put((byte)' ');
-      buf.flip();
-      sock.write(buf);
-
-      // Wait until the connection is closed by peer.
-      do{
-        try{
-          buf.flip();
-          sock.write(buf);
-        }
-        catch(IOException e){
-          break;
-        }
-      }while(true);
-
-      Assertions.assertFalse(resource.isBeforeCheckpointCalled());
-      Assertions.assertFalse(resource.isAfterRestoreCalled());
-
-      buf.clear();
-      sock.read(buf);
-      buf.flip();
-      Assertions.assertEquals((byte)'f', buf.get());
-    }
-    buf.clear();
+    request = HttpRequest.newBuilder()
+                         .uri(URI.create("http://localhost:10095/silver-bullet"))
+                         .POST(HttpRequest.BodyPublishers.noBody())
+                         .build();
+    response = client.send(request, HttpResponse.BodyHandlers.discarding());
+    Assertions.assertEquals(404, response.statusCode());
 
     // restore
-    try(var sock = SocketChannel.open(StandardProtocolFamily.UNIX)){
-      sock.connect(UnixDomainSocketAddress.of(sockPath));
-      buf.put((byte)'r');
-      buf.flip();
-      synchronized(resource){
-        sock.write(buf);
-        resource.wait();
-      }
-      Assertions.assertFalse(resource.isBeforeCheckpointCalled());
-      Assertions.assertTrue(resource.isAfterRestoreCalled());
-
-      buf.clear();
-      sock.read(buf);
-      buf.flip();
-      Assertions.assertEquals((byte)'t', buf.get());
-    }
-
+    request = HttpRequest.newBuilder()
+                         .uri(URI.create("http://localhost:10095/after-restore"))
+                         .POST(HttpRequest.BodyPublishers.noBody())
+                         .build();
+    response = client.send(request, HttpResponse.BodyHandlers.discarding());
+    Assertions.assertEquals(204, response.statusCode());
   }
 
 }

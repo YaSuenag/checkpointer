@@ -13,8 +13,6 @@ checkpointer provides checkpoint/restore hooks on [CRIU](https://criu.org/) as [
     * You can download JAR directly from [Maven Central](https://central.sonatype.com/artifact/org.crac/crac)
 * [CRIU](https://criu.org/)
     * `criu` package in Fedora
-* [Ncat](https://nmap.org/ncat/)
-    * `nmap-ncat` package in Fedora
 
 # How to build
 
@@ -26,7 +24,7 @@ mvn package
 
 See [example](example).
 
-You can build `example` with `mvn package`. Note that you have to run `mvn install` for checkpointer.
+You can build `example` with `mvn package`. Note that you have to run `mvn package` for checkpointer.
 
 ## 1. Run example app
 
@@ -58,7 +56,7 @@ sudo ./bin/checkpointer.sh restore /path/to/checkpoint/dir
 # Under the hood
 
 * checkpointer provides `org.crac` implementation especially `Resource` and `Context`. You can create your `beforeCheckpoint` and `afterRestore` hook.
-* checkpointer creates Unix domain socket as `/tmp/checkpointer.[PID]`. checkpointer accepts hook request from externals via this socket.
+* checkpointer creates HTTP endpoint to accept hook request from externals.
 * `criu` runs with `--action-script bin/checkpointer-actions.sh`. [checkpointer-actions.sh](bin/checkpointer-actions.sh) requests checkpointer to call hooks via Unix domain socket as following:
     * `pre-dump`: `beforeCheckpoint`
     * `post-resume`: `afterRestore`

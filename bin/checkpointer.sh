@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2024, Yasumasa Suenaga
+# Copyright (C) 2024, 2025, Yasumasa Suenaga
 #
 # This file is part of checkpointer
 #
@@ -40,7 +40,7 @@ if [ "$CMD" == 'checkpoint' ]; then
   TARGET_USER=`sed -e 's/\x0/\n/g' /proc/$TARGET_PID/environ | grep -w USER | cut -d '=' -f 2`
   echo $TARGET_USER > $CPDIR/username
   echo $TARGET_PID > $CPDIR/target_pid
-  criu dump -t $TARGET_PID --external unix --action-script $ACTION_SCRIPT -D $CPDIR -j
+  criu dump -t $TARGET_PID --action-script $ACTION_SCRIPT -D $CPDIR -j
   mv /tmp/hsperfdata_$TARGET_USER/$TARGET_PID $CPDIR/hsperfdata
   rm -f /tmp/checkpointer.$TARGET_PID
 elif [ "$CMD" == 'restore' ]; then
