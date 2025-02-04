@@ -7,7 +7,8 @@ checkpointer provides checkpoint/restore hooks on [CRIU](https://criu.org/) as [
 
 # Requirements
 
-* JDK 17 or later
+* JDK 8 or later
+    * Unit tests require JDK 11 or later
 * Maven
 * [org.crac](https://github.com/CRaC/org.crac)
     * You can download JAR directly from [Maven Central](https://central.sonatype.com/artifact/org.crac/crac)
@@ -25,6 +26,18 @@ mvn package
 See [example](example).
 
 You can build `example` with `mvn package`. Note that you have to run `mvn package` for checkpointer.
+
+You can specify following agent option:
+
+* `addr=<address>`: Listen address. `localhost:10095` is set by default.
+* `shutdown=<true|false>`: Shutdown agent thread when restre request finished. `true` is set by default.
+* `shutdown_timeout=<seconds>`: Shutdown timeout for agent thread. `10` is set by default.
+
+You can concatenate them with `,`:
+
+```
+-javaagent:/path/to/checkpointer-0.1.0.jar=addr=localhost:10095,shutdown=true,shutdown_timeout=10`
+```
 
 ## 1. Run example app
 

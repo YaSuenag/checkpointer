@@ -21,6 +21,7 @@ package com.yasuenag.checkpointer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -35,28 +36,55 @@ public class CheckpointerAgent implements HttpHandler{
   public static final String BEFORE_CHECKPOINT_PATH = "/before-checkpoint";
   public static final String AFTER_RESTORE_PATH = "/after-restore";
 
+  private final ExecutorService tpForServer;
+
   private final HttpServer server;
 
-  public CheckpointerAgent(String option) throws IOException{
-    String addr = "localhost:10095";
-    if(option != null){
-      if(option.startsWith("addr=")){
-        addr = option.substring(5);
-      }
-      else{
-        throw new IllegalArgumentException("Unknown option: " + option);
+  private InetSocketAddress addr;
+
+  private boolean needShutdown;
+
+  private int serverShutdownTimeout;
+
+  private void parseOptions(String options){
+    String host = "localhost";
+    int port = 10095;
+    needShutdown = true;
+    serverShutdownTimeout = 10;
+
+    if(options != null){
+      for(String option : options.split(",")){
+        String[] keyval = option.split("=");
+        switch(keyval[0]){
+          case "addr":
+            String[] hostport = keyval[1].split(":");
+            if(hostport.length > 2){
+              throw new IllegalArgumentException("Illegal address: " + keyval[1]);
+            }
+            host = hostport[0];
+            port = (hostport.length == 2) ? Integer.parseInt(hostport[1]) : 10095;
+            break;
+
+          case "shutdown":
+            needShutdown = Boolean.parseBoolean(keyval[1]);
+            break;
+
+          case "shutdown_timeout":
+            serverShutdownTimeout = Integer.parseInt(keyval[1]);
+            break;
+        }
       }
     }
 
-    String[] hostport = addr.split(":");
-    if(hostport.length > 2){
-      throw new IllegalArgumentException("Illegal address: " + addr);
-    }
+    addr = new InetSocketAddress(host, port);
+  }
 
-    int port = (hostport.length == 2) ? Integer.parseInt(hostport[1]) : 10095;
-    InetSocketAddress sockAddr = new InetSocketAddress(hostport[0], port);
-    server = HttpServer.create(sockAddr, 0);
-    server.setExecutor(Executors.newFixedThreadPool(1));
+  public CheckpointerAgent(String options) throws IOException{
+    parseOptions(options);
+
+    tpForServer = Executors.newFixedThreadPool(1);
+    server = HttpServer.create(addr, 0);
+    server.setExecutor(tpForServer);
     server.createContext(BEFORE_CHECKPOINT_PATH, this);
     server.createContext(AFTER_RESTORE_PATH, this);
 
@@ -66,6 +94,7 @@ public class CheckpointerAgent implements HttpHandler{
   @Override
   public void handle(HttpExchange exchange) throws IOException{
     int rCode = 400;
+    boolean doShutdown = false;
 
     try{
       if(exchange.getRequestMethod().equals("POST")){
@@ -74,9 +103,11 @@ public class CheckpointerAgent implements HttpHandler{
             Context.runAllOfBeforeCheckpointHooks();
             rCode = 204;
             break;
+
           case AFTER_RESTORE_PATH:
             Context.runAllOfAfterRestoreHooks();
             rCode = 204;
+            doShutdown = needShutdown;
             break;
         }
       }
@@ -91,7 +122,17 @@ public class CheckpointerAgent implements HttpHandler{
     }
     finally{
       exchange.close();
+
+      if(doShutdown){
+        server.stop(serverShutdownTimeout);
+        tpForServer.shutdown();
+      }
     }
+  }
+
+  public void shutdown(){
+    server.stop(serverShutdownTimeout);
+    tpForServer.shutdown();
   }
 
   public static void agentmain(String agentArgs) throws Exception{
