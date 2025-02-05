@@ -32,6 +32,8 @@ jobs:
         cp target/checkpointer-${{ github.ref_name }}.jar checkpointer/
         cp -fR bin checkpointer/
         cp README.md checkpointer/
+        cp LICENSE checkpointer/
+        curl -sL -o checkpointer/LICENSE-3rdparty https://raw.githubusercontent.com/CRaC/org.crac/refs/tags/1.5.0/LICENSE
         tar cvfz checkpointer-${{ github.ref_name }}.tar.gz checkpointer/
 
     - name: Upload release asset
