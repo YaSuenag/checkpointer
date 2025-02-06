@@ -50,7 +50,7 @@ cd example
 mvn package
 
 # Run example
-$JAVA_HOME/bin/java -javaagent:../target/checkpointer-0.1.0.jar -cp target/checkpointer-example-0.1.0.jar:../target/lib/crac-1.5.0.jar com.yasuenag.checkpointer.example.CheckpointerExample
+$JAVA_HOME/bin/java -javaagent:../target/checkpointer-0.1.0.jar -jar target/checkpointer-example-0.1.0.jar
 ```
 
 ## 2. Do checkpoint
@@ -70,7 +70,7 @@ sudo ./bin/checkpointer.sh restore /path/to/checkpoint/dir
 
 * checkpointer provides `org.crac` implementation especially `Resource` and `Context`. You can create your `beforeCheckpoint` and `afterRestore` hook.
 * checkpointer creates HTTP endpoint to accept hook request from externals.
-* `criu` runs with `--action-script bin/checkpointer-actions.sh`. [checkpointer-actions.sh](bin/checkpointer-actions.sh) requests checkpointer to call hooks via Unix domain socket as following:
+* `criu` runs with `--action-script bin/checkpointer-actions.sh`. [checkpointer-actions.sh](bin/checkpointer-actions.sh) requests checkpointer to call hooks via REST API on checkpointer Java Agent:
     * `pre-dump`: `beforeCheckpoint`
     * `post-resume`: `afterRestore`
 
