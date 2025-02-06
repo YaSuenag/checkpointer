@@ -60,7 +60,7 @@ public class Context extends org.crac.Context<Resource>{
     resources.add(resource);
   }
 
-  public static void runAllOfBeforeCheckpointHooks() throws CheckpointException{
+  public static synchronized void runAllOfBeforeCheckpointHooks() throws CheckpointException{
     try{
       for(Context ctxt : CONTEXTS){
         for(Resource res : ctxt.resources){
@@ -73,7 +73,7 @@ public class Context extends org.crac.Context<Resource>{
     }
   }
 
-  public static void runAllOfAfterRestoreHooks() throws RestoreException{
+  public static synchronized void runAllOfAfterRestoreHooks() throws RestoreException{
     try{
       for(Context ctxt : CONTEXTS){
         for(Resource res : ctxt.resources){
