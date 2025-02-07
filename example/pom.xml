@@ -69,31 +69,6 @@ along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <id>run</id>
-                        <phase>exec</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>${java.home}/bin/java</executable>
-                            <arguments>
-                                <!-- <argument>-Xlog:exceptions=trace</argument> -->
-                                <!-- <argument>-XX:-UsePerfData</argument> -->
-                                <argument>-javaagent:${project.basedir}/../target/checkpointer-0.1.0.jar</argument>
-                                <argument>-cp</argument>
-                                <classpath/>
-                                <argument>${mainClass}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 </project>
