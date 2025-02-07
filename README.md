@@ -11,7 +11,6 @@ checkpointer provides checkpoint/restore hooks on [CRIU](https://criu.org/) as [
     * Unit tests require JDK 11 or later
 * Maven
 * [org.crac](https://github.com/CRaC/org.crac)
-    * You can download JAR directly from [Maven Central](https://central.sonatype.com/artifact/org.crac/crac)
 * [CRIU](https://criu.org/)
     * `criu` package in Fedora
 
@@ -36,7 +35,7 @@ You can specify following agent option:
 You can concatenate them with `,`:
 
 ```
--javaagent:/path/to/checkpointer-0.1.0.jar=addr=localhost:10095,shutdown=true,shutdown_timeout=10`
+-javaagent:/path/to/checkpointer-0.1.0.jar=addr=localhost:10095,shutdown=true,shutdown_timeout=10
 ```
 
 ## 1. Run example app
