@@ -33,6 +33,7 @@ along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <agentclass>com.yasuenag.checkpointer.CheckpointerAgent</agentclass>
     </properties>
 
     <dependencies>
@@ -94,8 +95,8 @@ along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Premain-Class>com.yasuenag.checkpointer.CheckpointerAgent</Premain-Class>
-                                        <Agent-Class>com.yasuenag.checkpointer.CheckpointerAgent</Agent-Class>
+                                        <Premain-Class>${agentclass}</Premain-Class>
+                                        <Agent-Class>${agentclass}</Agent-Class>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
