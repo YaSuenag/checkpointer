@@ -31,6 +31,7 @@ You can specify following agent option:
 * `addr=<address>`: Listen address. `localhost:10095` is set by default.
 * `shutdown=<true|false>`: Shutdown agent thread when restre request finished. `true` is set by default.
 * `shutdown_timeout=<seconds>`: Shutdown timeout for agent thread. `10` is set by default.
+* `gc=<true|false>`: `true` if invoke `System.gc()` at `beforeCheckpoint`. `false` is set by default.
 
 You can concatenate them with `,`:
 

@@ -46,11 +46,14 @@ public class CheckpointerAgent implements HttpHandler{
 
   private int serverShutdownTimeout;
 
+  private boolean runGCAtBeforeCheckpoint;
+
   private void parseOptions(String options){
     String host = "localhost";
     int port = 10095;
     needShutdown = true;
     serverShutdownTimeout = 10;
+    runGCAtBeforeCheckpoint = false;
 
     if(options != null){
       for(String option : options.split(",")){
@@ -71,6 +74,10 @@ public class CheckpointerAgent implements HttpHandler{
 
           case "shutdown_timeout":
             serverShutdownTimeout = Integer.parseInt(keyval[1]);
+            break;
+
+          case "gc":
+            runGCAtBeforeCheckpoint = Boolean.parseBoolean(keyval[1]);
             break;
         }
       }
@@ -102,6 +109,9 @@ public class CheckpointerAgent implements HttpHandler{
           case BEFORE_CHECKPOINT_PATH:
             Context.runAllOfBeforeCheckpointHooks();
             rCode = 204;
+            if(runGCAtBeforeCheckpoint){
+              System.gc();
+            }
             break;
 
           case AFTER_RESTORE_PATH:
