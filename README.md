@@ -46,11 +46,11 @@ You can concatenate them with `,`:
 mvn package
 
 # Build example
-cd example
+cd example/simple
 mvn package
 
 # Run example
-$JAVA_HOME/bin/java -javaagent:../target/checkpointer-0.2.0.jar -jar target/checkpointer-example-0.1.0.jar
+$JAVA_HOME/bin/java -javaagent:../../target/checkpointer-0.2.0.jar -jar target/checkpointer-example-0.1.0.jar
 ```
 
 ## 2. Do checkpoint
