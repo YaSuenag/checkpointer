@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with checkpointer.  If not, see <http://www.gnu.org/licenses/>.
 
+CRIU_BIN="${CRIU_BIN:-`which criu`}"
+
 CMD=$1
 ARG1=$2
 ARG2=$3
@@ -40,7 +42,7 @@ if [ "$CMD" == 'checkpoint' ]; then
   TARGET_USER=`sed -e 's/\x0/\n/g' /proc/$TARGET_PID/environ | grep -w USER | cut -d '=' -f 2`
   echo $TARGET_USER > $CPDIR/username
   echo $TARGET_PID > $CPDIR/target_pid
-  criu dump -t $TARGET_PID --action-script $ACTION_SCRIPT -D $CPDIR -j
+  $CRIU_BIN dump -t $TARGET_PID --action-script $ACTION_SCRIPT -D $CPDIR -j
   mv /tmp/hsperfdata_$TARGET_USER/$TARGET_PID $CPDIR/hsperfdata
   rm -f /tmp/checkpointer.$TARGET_PID
 elif [ "$CMD" == 'restore' ]; then
@@ -55,7 +57,7 @@ elif [ "$CMD" == 'restore' ]; then
   mkdir -p /tmp/hsperfdata_$TARGET_USER
   cp $CPDIR/hsperfdata /tmp/hsperfdata_$TARGET_USER/$TARGET_PID
   chown $TARGET_USER /tmp/hsperfdata_$TARGET_USER/$TARGET_PID
-  criu restore --action-script $ACTION_SCRIPT -D $CPDIR -j
+  $CRIU_BIN restore --action-script $ACTION_SCRIPT -D $CPDIR -j
 elif [ -z "$CMD" ]; then
     echo 'Command is empty'
     exit 100

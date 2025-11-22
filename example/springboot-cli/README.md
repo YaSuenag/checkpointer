@@ -35,6 +35,9 @@ sudo $CHECKPOINTER_REPO/bin/checkpointer.sh checkpoint [PID] /path/to/checkpoint
 sudo $CHECKPOINTER_REPO/bin/checkpointer.sh restore /path/to/checkpoint/dir
 ```
 
+> [!NOTE]
+> Set `CRIU_BIN` if you want to use specific CRIU binary e.g. `sudo env CRIU_BIN=/path/to/criu ./bin/checkpointer.sh ...`
+
 # Ref. Normal invocation VS AOT (since Java 24) VS checkpointer
 
 Measured application running time with `time` command.
