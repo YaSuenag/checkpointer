@@ -7,25 +7,25 @@
     <groupId>com.yasuenag</groupId>
     <artifactId>springboot-cli</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.2</version>
+        <version>4.0.0</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>24</maven.compiler.source>
-        <maven.compiler.target>24</maven.compiler.target>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>3.4.2</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.crac</groupId>
@@ -46,7 +46,7 @@
                 <version>3.5.0</version>
                 <executions>
                     <execution>
-                        <id>aot-record</id>
+                        <id>aot</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
@@ -55,27 +55,8 @@
                             <workingDirectory>${project.build.directory}</workingDirectory>
                             <executable>${java.home}/bin/java</executable>
                             <arguments>
-                                <argument>-XX:AOTMode=record</argument>
-                                <argument>-XX:AOTConfiguration=app.aotconf</argument>
+                                <argument>-XX:AOTCacheOutput=app.aot</argument>
                                 <argument>-jar</argument>
-                                <argument>${project.build.finalName}.jar</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>aot-create</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <workingDirectory>${project.build.directory}</workingDirectory>
-                            <executable>${java.home}/bin/java</executable>
-                            <arguments>
-                                <argument>-XX:AOTMode=create</argument>
-                                <argument>-XX:AOTConfiguration=app.aotconf</argument>
-                                <argument>-XX:AOTCache=app.aot</argument>
-                                <argument>-cp</argument>
                                 <argument>${project.build.finalName}.jar</argument>
                             </arguments>
                         </configuration>

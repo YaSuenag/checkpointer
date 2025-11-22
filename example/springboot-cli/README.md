@@ -3,14 +3,10 @@ checkpointer example for Spring Boot CLI
 
 This example shows how to use checkpointer with Spring Boot.
 
-> [!IMPORTANT]
-> Spring Framework v6.2.2 on which Spring Boot v3.4.2 depends has a potential bug not to finish the app after restoring.
-> See [Pull Request on Spring Framework](https://github.com/spring-projects/spring-framework/pull/34372) for detailes. You can get a patch to resolve the issue.
-
 # Build
 
 ```
-export JAVA_HOME=/path/to/jdk24
+export JAVA_HOME=/path/to/jdk25
 mvn package
 ```
 
@@ -19,7 +15,7 @@ mvn package
 ## 1. Run example app
 
 ```
-$JAVA_HOME/bin/java -javaagent:/path/to/checkpointer-0.2.0.jar -jar springboot-cli-1.0.0.jar --checkpoint
+$JAVA_HOME/bin/java -javaagent:/path/to/checkpointer-0.2.0.jar -jar springboot-cli-1.0.1.jar --checkpoint
 ```
 
 ## 2. Do checkpoint
@@ -38,7 +34,7 @@ sudo $CHECKPOINTER_REPO/bin/checkpointer.sh restore /path/to/checkpoint/dir
 > [!NOTE]
 > Set `CRIU_BIN` if you want to use specific CRIU binary e.g. `sudo env CRIU_BIN=/path/to/criu ./bin/checkpointer.sh ...`
 
-# Ref. Normal invocation VS AOT (since Java 24) VS checkpointer
+# Ref. Normal invocation VS AOT (since Java 25) VS checkpointer
 
 Measured application running time with `time` command.
 
@@ -46,63 +42,63 @@ Measured application running time with `time` command.
 
 | Execution type | Time (real) | Gain |
 |---|---|---|
-| Normal | 1.012s | <div align="center">-</div> |
-| AOT | 0.950s | -0.062s (6.12%) |
-| checkpointer | 0.356s | -0.656 (64.82%) |
+| Normal | 0.986s | <div align="center">-</div> |
+| AOT | 0.680s | -0.306s (-31.0%) |
+| checkpointer | 0.152s | -0.834 (-84.5%) |
 
 ## Measurement environment in this doc
 
-* Fedora 41 x86\_64
+* Fedora 43 x86\_64
     * Client Hyper-V guest
     * 4vCPU, 8GB RAM
-    * kernel-6.13.8-200.fc41.x86\_64
-    * glibc-2.40-23.fc41.x86\_64
-* Java: java-latest-openjdk-24.0.0.0.36-1.rolling.fc41.x86\_64
-* CRIU: criu-4.0-4.fc41.x86\_64
+    * kernel-6.17.4-300.fc43.x86\_64
+    * glibc-2.42-4.fc43.x86\_64
+* Java: java-latest-openjdk-25.0.0.0.36-0.3.fc43.x86\_64
+* CRIU: Upstream (commit 2cf8f13ca)
 * Hyper-V Host
     * Hardware: AMD Ryzen 3300X, 16GB RAM
-    * Windows 11 24H2 (build 26100.3476)
+    * Windows 11 25H2 (build 26200.7171)
 
 ## How to measure
 
 ### Normal invocation
 
 ```
-real    0m1.012s
-user    0m2.562s
-sys     0m0.215s
+real    0m0.986s
+user    0m2.648s
+sys     0m0.178s
 ```
 
 ```
-time $JAVA_HOME/bin/java -jar springboot-cli-1.0.0.jar
+time $JAVA_HOME/bin/java -jar springboot-cli-1.0.1.jar
 ```
 
 ### AOT
 
 ```
-real    0m0.950s
-user    0m2.525s
-sys     0m0.190s
+real    0m0.680s
+user    0m2.089s
+sys     0m0.157s
 ```
 
-This pattern uses [JEP 483: Ahead-of-Time Class Loading & Linking](https://openjdk.org/jeps/483) introduced since Java 24. AOT cache would be generated in `package` phase in Maven. See [pom.xml](pom.xml) for details.
+This pattern uses [JEP 514: Ahead-of-Time Command-Line Ergonomics](https://openjdk.org/jeps/514) introduced since Java 25. AOT cache would be generated in `package` phase in Maven. See [pom.xml](pom.xml) for details.
 
 ```
-time $JAVA_HOME/bin/java -XX:AOTCache=app.aot -jar springboot-cli-1.0.0.jar
+time $JAVA_HOME/bin/java -XX:AOTCache=app.aot -jar springboot-cli-1.0.1.jar
 ```
 
 ### checkpointer
 
 ```
-real    0m0.356s
-user    0m0.055s
-sys     0m0.124s
+real    0m0.152s
+user    0m0.019s
+sys     0m0.121s
 ```
 
 #### 1. Start an example with `--checkpoint`
 
 ```
-$JAVA_HOME/bin/java -jar springboot-cli-1.0.0.jar --checkpoint
+$JAVA_HOME/bin/java -jar springboot-cli-1.0.1.jar --checkpoint
 ```
 
 #### 2. Obtain checkpoint
